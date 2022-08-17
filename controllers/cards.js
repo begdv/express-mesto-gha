@@ -1,7 +1,12 @@
+const mongoose = require('mongoose');
 const Card = require('../models/card');
+const { ERROR_CODE_DEFAULT, ERROR_CODE_INCORRECT_DATA, ERROR_CODE_OBJECT_NOT_FOUND } = require('../utils/const');
+const { ObjectNotFoundError } = require('../utils/utils');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
+    .populate('owner')
+    .populate('likes')
     .then((cards) => res.send({ data: cards }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
@@ -10,31 +15,68 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.send({ data: card }))
-    .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка' });
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Некорректные данные для создания карточки' });
+        return;
+      }
+      res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
     });
 };
 
 module.exports.removeCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => res.send({ data: card }))
-    .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка' });
+    .populate('owner')
+    .populate('likes')
+    .then((card) => {
+      if (!card) {
+        return Promise.reject(new ObjectNotFoundError('Карточка не найдена'));
+      }
+      return res.send({ data: card });
+    })
+    .catch((err) => {
+      if (err instanceof ObjectNotFoundError) {
+        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        return;
+      }
+      res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
     });
 };
 
 module.exports.addLike = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .then((card) => res.send({ data: card }))
-    .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка' });
+    .populate('owner')
+    .populate('likes')
+    .then((card) => {
+      if (!card) {
+        return Promise.reject(new ObjectNotFoundError('Карточка не найдена'));
+      }
+      return res.send({ data: card });
+    })
+    .catch((err) => {
+      if (err instanceof ObjectNotFoundError) {
+        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        return;
+      }
+      res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
     });
 };
 
 module.exports.removeLike = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .then((card) => res.send({ data: card }))
-    .catch(() => {
-      res.status(500).send({ message: 'Произошла ошибка' });
+    .populate('owner')
+    .populate('likes')
+    .then((card) => {
+      if (!card) {
+        return Promise.reject(new ObjectNotFoundError('Карточка не найдена'));
+      }
+      return res.send({ data: card });
+    })
+    .catch((err) => {
+      if (err instanceof ObjectNotFoundError) {
+        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        return;
+      }
+      res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
     });
 };
