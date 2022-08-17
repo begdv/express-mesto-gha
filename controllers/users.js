@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
-const { ERROR_CODE_DEFAULT, ERROR_CODE_INCORRECT_DATA, ERROR_CODE_OBJECT_NOT_FOUND } = require('../utils/const');
+const { ERROR_CODE_DEFAULT, ERROR_CODE_INCORRECT_DATA, ERROR_CODE_NOT_FOUND } = require('../utils/const');
 
 const { ObjectNotFoundError } = require('../utils/utils');
 
@@ -20,7 +20,7 @@ module.exports.getUser = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Пользователь не найден' });
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }
       if (err instanceof mongoose.Error.CastError) {
@@ -54,7 +54,7 @@ module.exports.updateUser = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Пользователь не найден' });
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }
       if (err instanceof mongoose.Error.ValidationError) {
@@ -75,7 +75,7 @@ module.exports.updateAvatar = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Пользователь не найден' });
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }
       if (err instanceof mongoose.Error.ValidationError) {

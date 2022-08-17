@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
-const { ERROR_CODE_DEFAULT, ERROR_CODE_INCORRECT_DATA, ERROR_CODE_OBJECT_NOT_FOUND } = require('../utils/const');
+const { ERROR_CODE_DEFAULT, ERROR_CODE_INCORRECT_DATA, ERROR_CODE_NOT_FOUND } = require('../utils/const');
 
 const { ObjectNotFoundError } = require('../utils/utils');
 
@@ -41,7 +41,7 @@ module.exports.removeCard = (req, res) => {
         return;
       }
       if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
       res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
@@ -68,7 +68,7 @@ module.exports.addLike = (req, res) => {
         return;
       }
       if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
       res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
@@ -95,7 +95,7 @@ module.exports.removeLike = (req, res) => {
         return;
       }
       if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
       res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
