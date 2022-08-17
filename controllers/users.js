@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const User = require('../models/user');
 const { ERROR_CODE_DEFAULT, ERROR_CODE_INCORRECT_DATA, ERROR_CODE_OBJECT_NOT_FOUND } = require('../utils/const');
+
 const { ObjectNotFoundError } = require('../utils/utils');
 
 module.exports.getUsers = (req, res) => {
@@ -19,6 +20,10 @@ module.exports.getUser = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof ObjectNotFoundError) {
+        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Пользователь не найден' });
+        return;
+      }
+      if (err instanceof mongoose.Error.CastError) {
         res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Пользователь не найден' });
         return;
       }

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Card = require('../models/card');
 const { ERROR_CODE_DEFAULT, ERROR_CODE_INCORRECT_DATA, ERROR_CODE_OBJECT_NOT_FOUND } = require('../utils/const');
+
 const { ObjectNotFoundError } = require('../utils/utils');
 
 module.exports.getCards = (req, res) => {
@@ -35,8 +36,8 @@ module.exports.removeCard = (req, res) => {
       return res.send({ data: card });
     })
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
       if (err instanceof ObjectNotFoundError) {
@@ -59,7 +60,11 @@ module.exports.addLike = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'ППереданы некорректные данные для постановки/снятии лайка' });
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+        return;
+      }
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
       if (err instanceof ObjectNotFoundError) {
@@ -81,7 +86,15 @@ module.exports.removeLike = (req, res) => {
       return res.send({ data: card });
     })
     .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+        return;
+      }
       if (err instanceof ObjectNotFoundError) {
+        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        return;
+      }
+      if (err instanceof mongoose.Error.CastError) {
         res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }
