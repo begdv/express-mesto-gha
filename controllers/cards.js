@@ -17,7 +17,7 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Некорректные данные для создания карточки' });
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Переданы некорректные данные при создании карточки' });
         return;
       }
       res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
@@ -35,6 +35,10 @@ module.exports.removeCard = (req, res) => {
       return res.send({ data: card });
     })
     .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+        return;
+      }
       if (err instanceof ObjectNotFoundError) {
         res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
@@ -54,6 +58,10 @@ module.exports.addLike = (req, res) => {
       return res.send({ data: card });
     })
     .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'ППереданы некорректные данные для постановки/снятии лайка' });
+        return;
+      }
       if (err instanceof ObjectNotFoundError) {
         res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;

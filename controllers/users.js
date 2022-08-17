@@ -32,7 +32,7 @@ module.exports.createUser = (req, res) => {
     .then((users) => res.send({ data: users }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Некорректные данные для создания пользователя' });
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Переданы некорректные данные при создании пользователя' });
         return;
       }
       res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
@@ -53,7 +53,7 @@ module.exports.updateUser = (req, res) => {
         return;
       }
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Некорректные данные для обновления пользователя' });
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Переданы некорректные данные при обновлении профиля' });
         return;
       }
       res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
@@ -74,7 +74,7 @@ module.exports.updateAvatar = (req, res) => {
         return;
       }
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Некорректные данные для обновления аватара' });
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Переданы некорректные данные при обновлении аватара' });
         return;
       }
       res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
