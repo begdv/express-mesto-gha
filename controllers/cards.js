@@ -37,7 +37,7 @@ module.exports.removeCard = (req, res) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Карточка не найдена' });
         return;
       }
       if (err instanceof ObjectNotFoundError) {
@@ -64,7 +64,7 @@ module.exports.addLike = (req, res) => {
         return;
       }
       if (err instanceof mongoose.Error.CastError) {
-        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Карточка не найдена' });
         return;
       }
       if (err instanceof ObjectNotFoundError) {
@@ -90,11 +90,11 @@ module.exports.removeLike = (req, res) => {
         res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
         return;
       }
-      if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Карточка не найдена' });
         return;
       }
-      if (err instanceof mongoose.Error.CastError) {
+      if (err instanceof ObjectNotFoundError) {
         res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Карточка не найдена' });
         return;
       }

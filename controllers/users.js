@@ -24,7 +24,7 @@ module.exports.getUser = (req, res) => {
         return;
       }
       if (err instanceof mongoose.Error.CastError) {
-        res.status(ERROR_CODE_OBJECT_NOT_FOUND).send({ message: 'Пользователь не найден' });
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Пользователь не найден' });
         return;
       }
       res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
