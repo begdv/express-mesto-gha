@@ -7,24 +7,24 @@ const { ObjectNotFoundError } = require('../utils/utils');
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return Promise.reject(new ObjectNotFoundError('Пользователь не найден'));
+        return Promise.reject(new ObjectNotFoundError('Пользователь c запрошенным id не найден'));
       }
       return res.send({ data: user });
     })
     .catch((err) => {
       if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Пользователь не найден' });
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: err.message });
         return;
       }
       if (err instanceof mongoose.Error.CastError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Пользователь не найден' });
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Запрошенный id пользователя является некорректным' });
         return;
       }
       res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
@@ -48,13 +48,13 @@ module.exports.updateUser = (req, res) => {
   User.findByIdAndUpdate(req.user._id, req.body, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
-        return Promise.reject(new ObjectNotFoundError('Пользователь не найден'));
+        return Promise.reject(new ObjectNotFoundError('Пользователь c запрошенным id не найден'));
       }
       return res.send({ data: user });
     })
     .catch((err) => {
       if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Пользователь не найден' });
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: err.message });
         return;
       }
       if (err instanceof mongoose.Error.ValidationError) {
@@ -69,13 +69,13 @@ module.exports.updateAvatar = (req, res) => {
   User.findByIdAndUpdate(req.user._id, req.body, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
-        return Promise.reject(new ObjectNotFoundError('Пользователь не найден'));
+        return Promise.reject(new ObjectNotFoundError('Пользователь c запрошенным id не найден'));
       }
       return res.send({ data: user });
     })
     .catch((err) => {
       if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Пользователь не найден' });
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: err.message });
         return;
       }
       if (err instanceof mongoose.Error.ValidationError) {

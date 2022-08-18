@@ -9,7 +9,7 @@ module.exports.getCards = (req, res) => {
     .populate('owner')
     .populate('likes')
     .then((cards) => res.send({ data: cards }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -31,17 +31,17 @@ module.exports.removeCard = (req, res) => {
     .populate('likes')
     .then((card) => {
       if (!card) {
-        return Promise.reject(new ObjectNotFoundError('Карточка не найдена'));
+        return Promise.reject(new ObjectNotFoundError('Карточка c запрошенным id не найдена'));
       }
       return res.send({ data: card });
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Карточка не найдена' });
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Запрошенный id карточки является некорректным' });
         return;
       }
       if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: err.message });
         return;
       }
       res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
@@ -54,7 +54,7 @@ module.exports.addLike = (req, res) => {
     .populate('likes')
     .then((card) => {
       if (!card) {
-        return Promise.reject(new ObjectNotFoundError('Карточка не найдена'));
+        return Promise.reject(new ObjectNotFoundError('Карточка c запрошенным id не найдена'));
       }
       return res.send({ data: card });
     })
@@ -64,11 +64,11 @@ module.exports.addLike = (req, res) => {
         return;
       }
       if (err instanceof mongoose.Error.CastError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Карточка не найдена' });
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Запрошенный id карточки является некорректным' });
         return;
       }
       if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: err.message });
         return;
       }
       res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
@@ -81,7 +81,7 @@ module.exports.removeLike = (req, res) => {
     .populate('likes')
     .then((card) => {
       if (!card) {
-        return Promise.reject(new ObjectNotFoundError('Карточка не найдена'));
+        return Promise.reject(new ObjectNotFoundError('Карточка c запрошенным id не найдена'));
       }
       return res.send({ data: card });
     })
@@ -91,11 +91,11 @@ module.exports.removeLike = (req, res) => {
         return;
       }
       if (err instanceof mongoose.Error.CastError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Карточка не найдена' });
+        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Запрошенный id карточки является некорректным' });
         return;
       }
       if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Карточка не найдена' });
+        res.status(ERROR_CODE_NOT_FOUND).send({ message: err.message });
         return;
       }
       res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
