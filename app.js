@@ -22,9 +22,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/users', require('./routes/users'));
-
-app.use('/cards', require('./routes/cards'));
+app.use(require('./routes/index'));
 
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
