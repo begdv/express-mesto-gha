@@ -26,7 +26,7 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.removeCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findOneAndRemove({ id_: req.params.cardId, owner: req.user._id })
     .populate('owner')
     .populate('likes')
     .then((card) => {
