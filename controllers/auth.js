@@ -16,7 +16,14 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       email, password: hash, name, about, avatar,
     }))
-    .then((user) => res.send({ data: user }))
+    .then(() => res.send({
+      data: {
+        email,
+        name,
+        about,
+        avatar,
+      },
+    }))
     .catch((err) => {
       if (err.code === 11000) {
         return next(new ConflictError('При регистрации указан email, который уже существует на сервере'));
