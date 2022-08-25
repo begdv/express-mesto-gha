@@ -35,15 +35,10 @@ module.exports.getMe = (req, res, next) => {
       }
       return res.send({ data: user });
     })
-    .catch((err) => {
-      if (err instanceof mongoose.Error.CastError) {
-        return next(new BadRequestError('Запрошенный id пользователя является некорректным'));
-      }
-      return next(err);
-    });
+    .catch(next);
 };
 
-module.exports.updateUser = (req, res, next) => {
+module.exports.updateMe = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, req.body, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
@@ -59,7 +54,7 @@ module.exports.updateUser = (req, res, next) => {
     });
 };
 
-module.exports.updateAvatar = (req, res, next) => {
+module.exports.updateMeAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, req.body, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
