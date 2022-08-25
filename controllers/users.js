@@ -12,6 +12,22 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
+  User.findById(req.params.userId)
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Пользователь c запрошенным id не найден');
+      }
+      return res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        return next(new BadRequestError('Запрошенный id пользователя является некорректным'));
+      }
+      return next(err);
+    });
+};
+
+module.exports.getMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
       if (!user) {
