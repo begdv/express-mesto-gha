@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 
-const { createUser, login } = require('./controllers/auth');
+const { errors } = require('celebrate');
+
 const auth = require('./middlewares/auth');
 
 const NotFoundError = require('./errors/NotFoundError');
@@ -21,8 +22,7 @@ app.use(helmet());
 
 app.use(bodyParser.json());
 
-app.post('/users/signup', createUser);
-app.post('/users/signin', login);
+app.use(require('./routes/auth'));
 
 app.use(auth);
 
@@ -35,6 +35,8 @@ app.use((req, res, next) => {
     next(err);
   }
 });
+
+app.use(errors());
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
