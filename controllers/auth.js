@@ -48,11 +48,13 @@ module.exports.login = (req, res, next) => {
             throw new UnauthorizedError('Неправильная почта или пароль');
           }
           const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-          return res.cookie('jwt', token, {
+          res.cookie('jwt', token, {
             maxAge: 3600000,
             httpOnly: true,
-          })
-            .end();
+          });
+          res.send({
+            data: token,
+          });
         });
     })
     .catch(next);
