@@ -7,7 +7,7 @@ const helmet = require('helmet');
 const { createUser, login } = require('./controllers/auth');
 const auth = require('./middlewares/auth');
 
-const { ERROR_CODE_NOT_FOUND } = require('./utils/const');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000 } = process.env;
 
@@ -29,7 +29,21 @@ app.use(auth);
 app.use(require('./routes/index'));
 
 app.use((req, res, next) => {
-  res.status(ERROR_CODE_NOT_FOUND).send({ message: 'Путь не найден' });
+  try {
+    throw new NotFoundError('Путь не найден');
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+
+  res.status(statusCode).send({
+    message: statusCode === 500
+      ? 'На сервере произошла ошибка'
+      : message,
+  });
   next();
 });
 

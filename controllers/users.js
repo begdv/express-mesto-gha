@@ -1,75 +1,60 @@
 const mongoose = require('mongoose');
 
 const User = require('../models/user');
-const { ERROR_CODE_DEFAULT, ERROR_CODE_INCORRECT_DATA, ERROR_CODE_NOT_FOUND } = require('../utils/const');
 
-const { ObjectNotFoundError } = require('../utils/utils');
+const NotFoundError = require('../errors/NotFoundError');
+const BadRequestError = require('../errors/BadRequestError');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch(() => res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return Promise.reject(new ObjectNotFoundError('Пользователь c запрошенным id не найден'));
+        throw new NotFoundError('Пользователь c запрошенным id не найден');
       }
       return res.send({ data: user });
     })
     .catch((err) => {
-      if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: err.message });
-        return;
-      }
       if (err instanceof mongoose.Error.CastError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Запрошенный id пользователя является некорректным' });
-        return;
+        return next(new BadRequestError('Запрошенный id пользователя является некорректным'));
       }
-      res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
+      return next(err);
     });
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, req.body, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
-        return Promise.reject(new ObjectNotFoundError('Пользователь c запрошенным id не найден'));
+        throw new NotFoundError('Пользователь c запрошенным id не найден');
       }
       return res.send({ data: user });
     })
     .catch((err) => {
-      if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: err.message });
-        return;
-      }
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Переданы некорректные данные при обновлении профиля' });
-        return;
+        return next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
       }
-      res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
+      return next(err);
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, req.body, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
-        return Promise.reject(new ObjectNotFoundError('Пользователь c запрошенным id не найден'));
+        throw new NotFoundError('Пользователь c запрошенным id не найден');
       }
       return res.send({ data: user });
     })
     .catch((err) => {
-      if (err instanceof ObjectNotFoundError) {
-        res.status(ERROR_CODE_NOT_FOUND).send({ message: err.message });
-        return;
-      }
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Переданы некорректные данные при обновлении аватара' });
-        return;
+        return next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
       }
-      res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
+      return next(err);
     });
 };

@@ -2,10 +2,13 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/user');
-const { ERROR_CODE_DEFAULT, ERROR_CODE_INCORRECT_DATA } = require('../utils/const');
+const BadRequestError = require('../errors/BadRequestError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
+const ConflictError = require('../errors/ConflictError');
 
-module.exports.createUser = (req, res) => {
+const User = require('../models/user');
+
+module.exports.createUser = (req, res, next) => {
   const {
     email, password, name, about, avatar,
   } = req.body;
@@ -15,25 +18,27 @@ module.exports.createUser = (req, res) => {
     }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        res.status(ERROR_CODE_INCORRECT_DATA).send({ message: 'Переданы некорректные данные при создании пользователя' });
-        return;
+      if (err.code === 11000) {
+        return next(new ConflictError('При регистрации указан email, который уже существует на сервере'));
       }
-      res.status(ERROR_CODE_DEFAULT).send({ message: 'Произошла ошибка' });
+      if (err instanceof mongoose.Error.ValidationError) {
+        return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+      }
+      return next(err);
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        throw new UnauthorizedError('Неправильная почта или пароль');
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
+            throw new UnauthorizedError('Неправильная почта или пароль');
           }
           const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
           return res.cookie('jwt', token, {
@@ -43,7 +48,5 @@ module.exports.login = (req, res) => {
             .end();
         });
     })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
+    .catch(next);
 };
