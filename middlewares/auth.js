@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
 
   try {
     if (!authorization || !authorization.startsWith('Bearer ')) {
-      throw new UnauthorizedError('Пользователь не авторизован на сервере');
+      throw new UnauthorizedError('Пользователь не авторизован на сервере1');
     }
   } catch (err) {
     return next(err);
@@ -19,7 +19,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'some-secret-key');
   } catch (err) {
-    next(new UnauthorizedError('Пользователь не авторизован на сервере'));
+    next(new UnauthorizedError('Пользователь не авторизован на сервере2'));
   }
 
   req.user = payload;
