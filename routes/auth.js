@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 
 const { createUser, login } = require('../controllers/auth');
 
-router.post('/users/signup', celebrate({
+router.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required(),
@@ -13,7 +13,7 @@ router.post('/users/signup', celebrate({
   }),
 }), createUser);
 
-router.post('/users/signin', celebrate({
+router.post('/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
     password: Joi.string().min(8).required(),
