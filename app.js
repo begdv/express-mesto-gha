@@ -8,6 +8,8 @@ const { errors } = require('celebrate');
 
 const auth = require('./middlewares/auth');
 
+const errorHandling = require('./middlewares/error');
+
 const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000 } = process.env;
@@ -29,24 +31,11 @@ app.use(auth);
 app.use(require('./routes/index'));
 
 app.use((req, res, next) => {
-  try {
-    throw new NotFoundError('Путь не найден');
-  } catch (err) {
-    next(err);
-  }
+  next(new NotFoundError('Путь не найден'));
 });
 
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-
-  res.status(statusCode).send({
-    message: statusCode === 500
-      ? 'На сервере произошла ошибка'
-      : message,
-  });
-  next();
-});
+app.use(errorHandling);
 
 app.listen(PORT);

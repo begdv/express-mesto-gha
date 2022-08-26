@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
+const { expressionLink } = require('../utils/const');
+
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -34,7 +36,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator(val) {
-        const urlRegex = /^https?:\/\/([a-z0-9]\.|[a-z0-9][a-z0-9-]*[a-z0-9]\.)*[a-z][a-z0-9-]*[a-z0-9](:\d+)?(\/+[a-z0-9$_.+!*'(),;:@&=-]*)*#?$/;
+        const urlRegex = expressionLink;
         return urlRegex.test(val);
       },
       message: (props) => `${props.value} - некорректная ссылка!`,
