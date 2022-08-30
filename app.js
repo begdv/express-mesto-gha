@@ -6,6 +6,8 @@ const helmet = require('helmet');
 
 const { errors } = require('celebrate');
 
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+
 const auth = require('./middlewares/auth');
 
 const errorHandling = require('./middlewares/error');
@@ -24,6 +26,8 @@ app.use(helmet());
 
 app.use(bodyParser.json());
 
+app.use(requestLogger);
+
 app.use(require('./routes/auth'));
 
 app.use(auth);
@@ -33,6 +37,8 @@ app.use(require('./routes/index'));
 app.use((req, res, next) => {
   next(new NotFoundError('Путь не найден'));
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 
